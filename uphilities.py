@@ -7,6 +7,42 @@ import random as R
 
 from dotenv import load_dotenv; load_dotenv()
 
+# wordnik allows unlimited requests, but will 429 pretty quickly
+# .. in that case, use wordsAPI
+wordnik_url = os.getenv('WORDNIK_URL')
+words_url = f'https://wordsapiv1.p.rapidapi.com/words/'
+words_headers = { 'x-rapidapi-key': os.getenv('WORDS_KEY'), 
+  'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com' }
+def random_word():
+  wordnik_resp = requests.get(wordnik_url)
+  if wordnik_resp.status_code == 200:
+    return wordnik_resp.json()['word']
+
+  words_resp = requests.get(words_url, headers=words_headers, params={'random':'true'})
+  return words_resp.json()['word']
+
+
+# return a tweet's text, obtained by searching for 'query'
+from twython import Twython
+twitter = Twython(os.getenv('TW_APP_KEY'),   os.getenv('TW_APP_SEC'),
+                  os.getenv('TW_OAUTH_KEY'), os.getenv('TW_OAUTH_SEC'))
+def twitter_search(query=None):
+  if query is None: query = random_word()
+
+  # make request to twitter
+  query += ' -filter:retweets -filter:replies'
+  tweets = twitter.search(q=query, tweet_mode='extended', lang='en')['statuses']
+
+  # if no tweets are found, search for a random word instead
+  if len(tweets) == 0: return twitter_search()
+
+  # choose a random result and clean text
+  text = R.choice(tweets)['full-text']
+  text = re.sub(' ??https?://.*/\w+ ??', '', text)
+  text = re.sub('&amp;', '&', text)
+
+  return text
+
 re_li = re.compile('<li.*?>.*?(?=<ol>|</li>)')
 def get_todo(with_number=False):
   # ask the bucket list for its items
@@ -73,7 +109,5 @@ def compare(a, b):
 
   return result
 
-if __name__ == '__main__':
-  print(compare('bananas', 'my mom'))
 
 
