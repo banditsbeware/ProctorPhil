@@ -3,17 +3,16 @@
 import os
 import re
 import quiz
-import paul
 import discord
 from discord.ext import commands
 from random import sample, choice, random
 from homework import explanation, wikirand
 
-import uphilities
+import uphilities as phil
 
 from dotenv import load_dotenv
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='/')
 
@@ -21,7 +20,8 @@ QUIZ = quiz.Quiz()
 
 @bot.event
 async def on_ready():
-  print(f'{bot.user.name} has connected to {[bot.guilds[i].name for i in range(len(bot.guilds))]}')
+  for guild in bot.guilds:
+    print(f'!!! ProctorPhil has connected to {guild.name}')
   
 """
 @bot.command(name='FunctionName', help='description')	
@@ -107,11 +107,7 @@ async def comment(ctx, *topic):
   topic = ' '.join(topic)
 
   # search twitter for the given string
-  comment = paul.simple_search(topic) if len(topic) else paul.simple_search()
-
-  # get rid of links (not extensively tested but seems to work)
-  comment = re.sub(' ??https?://.*/\w+ ??', '', comment)
-  comment = re.sub('&amp;', '&', comment) # ... and fix ampersands
+  comment = phil.twitter_search(topic) if len(topic) else phil.twitter_search()
 
   # send response
   print(f'{ctx.author.name} wants to talk about {topic}')
@@ -132,22 +128,17 @@ async def compare(ctx, *args):
     args = args.split(' and ')
     
     print(f'{ctx.author.name} compared {args[0]} and {args[1]}')
-    await ctx.send(uphilities.compare(args[0], args[1]))
-
-@bot.command(name='aspire', help='what does Phil aspire to?')
-async def aspire(ctx):
-  base = choice(['i want', 'i need', 'i wish', 'i will', 'i have to'])
-  await ctx.send(paul.simple_search(base))
+    await ctx.send(phil.compare(args[0], args[1]))
 
 @bot.command(name='define', help='learn the definition of a word or phrase')
 async def define(ctx, *args):
   query = ' '.join(args)
   print(f'{ctx.author.name} has defined \'{query}\' for the channel')
-  await ctx.send(f'**{query}**: {uphilities.urban_definition(query)}')
+  await ctx.send(f'**{query}**: {phil.urban_definition(query)}')
 
 @bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
 async def todo(ctx):
   print(f'{ctx.author.name} needs something to do...')
-  await ctx.send(uphilities.get_todo(with_number=True))
+  await ctx.send(phil.get_todo(with_number=True))
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN)
