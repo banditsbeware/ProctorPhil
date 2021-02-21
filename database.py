@@ -1,4 +1,5 @@
 import sqlite3
+from random import choice
 
 VOCAB_CREATE = 'CREATE TABLE IF NOT EXISTS vocabulary (token TEXT UNIQUE, part TEXT)'
 VOCAB_INSERT = 'INSERT OR REPLACE INTO vocabulary VALUES (?,?)'
@@ -14,6 +15,7 @@ class Database:
       'NOUN-CONTINUOUS',        # water, science, milk
       'VERB',                   # sing, die, exist
       'VERB-TRANSITIVE',        # punch, look at, think about
+      'VERB-HELPER',            # wants to, wanted to, will never
       'ARTICLE',                # the, my, his 
       'ADJECTIVE',              # blue, difficult, sour
       'ADVERB',                 # quickly, surprisingly
@@ -31,7 +33,10 @@ class Database:
 
     cur = self.conn.cursor()
     cur.execute(VOCAB_SELECT, (part,))
-    return cur.fetchall()
+    return [tup[0] for tup in cur.fetchall()]
+
+  def random(self, part):
+    return choice(self.fetch(part))
 
   def insert(self, token, part):
     if part not in self.valid_parts:
@@ -41,10 +46,10 @@ class Database:
       # create a list of tuples, e.g.
       # [('word 1', 'NOUN'), ('word 2', 'NOUN'), ('word 3', 'NOUN'),...]
       values = [(i, part) for i in token]
+      self.conn.executemany(VOCAB_INSERT, values)
     else:
       values = (token, part)
-
-    self.conn.execute(VOCAB_INSERT, values)
+      self.conn.execute(VOCAB_INSERT, values)
     self.conn.commit()
 
   def count(self, part):
@@ -54,11 +59,17 @@ class Database:
 
   def summary(self):
     for part in self.valid_parts:
-      print(f'{part}: {self.count(part)}')
+      print(f'{part:>24}: {self.count(part)}')
+
+  def close(self):
+    self.conn.close()
 
 
 if __name__ == '__main__':
   
   db = Database('./vocabulary.db')
 
+  db.insert(['wants to', 'wanted to', 'will never', 'will not', 'could', 'should'], 'VERB-HELPER')
+
   db.summary()
+  db.close()

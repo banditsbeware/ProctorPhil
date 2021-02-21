@@ -5,7 +5,6 @@ import re
 import quiz
 import paul
 import discord
-import compare
 from discord.ext import commands
 from random import sample, choice, random
 from homework import explanation, wikirand
@@ -133,8 +132,7 @@ async def compare(ctx, *args):
     args = args.split(' and ')
     
     print(f'{ctx.author.name} compared {args[0]} and {args[1]}')
-    # await ctx.send(c.compare(args[0], args[1]))
-    await ctx.send('`compare is almost fixed...`')
+    await ctx.send(uphilities.compare(args[0], args[1]))
 
 @bot.command(name='aspire', help='what does Phil aspire to?')
 async def aspire(ctx):
@@ -150,6 +148,6 @@ async def define(ctx, *args):
 @bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
 async def todo(ctx):
   print(f'{ctx.author.name} needs something to do...')
-  await ctx.send(uphilities.get_todo())
+  await ctx.send(uphilities.get_todo(with_number=True))
 
 bot.run(TOKEN)
