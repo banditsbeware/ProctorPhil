@@ -114,7 +114,6 @@ async def comment(ctx, *topic):
   await ctx.send(comment)
 
 
-c = compare.Comparer()
 @bot.command(name='compare', help='list some pros and cons about two things (ex: \"compare dogs and cats\"')
 async def compare(ctx, *args):
   args = ' '.join(args)
