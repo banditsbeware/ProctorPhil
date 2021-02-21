@@ -10,6 +10,8 @@ from discord.ext import commands
 from random import sample, choice, random
 from homework import explanation, wikirand
 
+import uphilities
+
 from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -121,38 +123,33 @@ c = compare.Comparer()
 @bot.command(name='compare', help='list some pros and cons about two things (ex: \"compare dogs and cats\"')
 async def compare(ctx, *args):
   args = ' '.join(args)
-
+  # ensure argument has the correct format
   if ' and ' not in args:
     await ctx.send('Format: /compare `thing 1` and `thing 2`')
 
+  # this way, phil can compare things that have more than one word
+  # as in "/compare my mom and your mom"
   else:
     args = args.split(' and ')
     
     print(f'{ctx.author.name} compared {args[0]} and {args[1]}')
-    await ctx.send(c.compare(args[0], args[1]))
+    # await ctx.send(c.compare(args[0], args[1]))
+    await ctx.send('`compare is almost fixed...`')
 
 @bot.command(name='aspire', help='what does Phil aspire to?')
 async def aspire(ctx):
   base = choice(['i want', 'i need', 'i wish', 'i will', 'i have to'])
   await ctx.send(paul.simple_search(base))
 
-import urbanpython
-urban = urbanpython.Urban(os.getenv('URBAN_DICTIONARY_KEY'))
 @bot.command(name='define', help='learn the definition of a word or phrase')
 async def define(ctx, *args):
-
-  # join arguments into one query
   query = ' '.join(args)
-  result = urban.search(query)
-
-  # chance to add example
-  defn = result.definition + (f'\n\n{result.example}' if random() < 0.3 else '')
-
-  # remove brackets etc.
-  defn = re.sub(r'(\[|\]|\{|\})', '', defn)
-
-  # send response
   print(f'{ctx.author.name} has defined \'{query}\' for the channel')
-  await ctx.send(f'**{query}**: {defn}')
+  await ctx.send(f'**{query}**: {uphilities.urban_definition(query)}')
+
+@bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
+async def todo(ctx):
+  print(f'{ctx.author.name} needs something to do...')
+  await ctx.send(uphilities.get_todo())
 
 bot.run(TOKEN)

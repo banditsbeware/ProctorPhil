@@ -1,20 +1,19 @@
-import os
 import sqlite3
-from random import choice
-
-from dotenv import load_dotenv; load_dotenv()
-
 class Database:
-  def __init__(self):
-    self.path = os.getenv('PATH_TO_DATABASE')
-    self.speech = ['noun', 'verb', 'adjective', 'adverb']
+  def __init__(self, _path):
+    self.path = _path
+    self.speech = ['noun', 'nounplural', 'nouncont', 'art1', 'art2', 'verb', 'verbs', 'verbing', 'adjective', 'adverb']
     for part in self.speech:
       self.execute(f'CREATE TABLE IF NOT EXISTS {part} (token text unique)')
 
-  def reset(self):
-    for part in self.speech:
+  def reset(self, part=None):
+    if part is None:
+      for p in self.speech:
+        self.execute(f'DROP TABLE {p}')
+    else:
       self.execute(f'DROP TABLE {part}')
-    self.__init__()
+
+    self.__init__(self.path)
   
   def execute(self, operation):
     conn = sqlite3.connect(self.path)
@@ -39,20 +38,13 @@ class Database:
   def count(self, part):
     return len(self.fetch(part))
 
-  def random(self, part):
-    return choice(self.fetch(part))
-  
   def summary(self):
     for part in self.speech:
       print(f'{part}: {self.count(part)}')
 
+
 if __name__ == '__main__':
-  db = Database()
+  
+  db = Database('./vocabulary.db')
 
-  part = 'verb'
-  blob = ''
-  if len(blob):
-    db.insert(part, blob.split('\n'))
-
-  print(db.random('noun'))
   db.summary()
