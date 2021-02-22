@@ -10,8 +10,6 @@
 #include <string.h>
 #include <signal.h>
 
-#define CMDLEN 50
-
 int main() {
 
   char *cmd = "python3";
@@ -25,7 +23,7 @@ int main() {
 
   else if (pid == 0) {
 
-    printf("starting ProctorPhil at PID %d...\n", getpid());
+    printf("[egg] starting ProctorPhil at PID %d\n", getpid());
 
     if (execvp(cmd, args)) {
       printf("failed to run ProctorPhil\n");
@@ -34,9 +32,10 @@ int main() {
     
   } else {
 
-    sleep(10);
+    // run bot for 59m 55s
+    sleep(3600 - 5);
     kill(pid, SIGTERM);
-    printf("PID %d terminated.\n", pid);
+    printf("[egg] PID %d terminated.\n", pid);
     exit(0);
 
   }
