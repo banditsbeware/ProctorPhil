@@ -16,12 +16,14 @@ DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='/')
 
+def log(msg):
+  print(f'[Phil] {msg}')
+
 QUIZ = quiz.Quiz()
 
 @bot.event
 async def on_ready():
-  for guild in bot.guilds:
-    print(f'!!! ProctorPhil has connected to {guild.name}')
+  for guild in bot.guilds: log(f'connected to {guild.name}')
   
 """
 @bot.command(name='FunctionName', help='description')	
@@ -32,15 +34,15 @@ async def MyFunction(ctx):
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):
-  print(f'{ctx.author.name} started a new quiz')
+  log(f'{ctx.author.name} started a new quiz')
   QUIZ.clear_questions()
 
 @bot.command(name='question', help='adds a question to the quiz and displays it to the chat')
 async def question(ctx):
-  print(f'{ctx.author.name} generated a question')
+  log(f'{ctx.author.name} generated a question')
   new_question = QUIZ.add_question()
   await ctx.send(new_question.question_string())
-  print(f'\tquiz now has {QUIZ.num_questions()} questions')
+  log(f'quiz now has {QUIZ.num_questions()} questions')
 
 @bot.command(name='answer', help='submits your answer to a question')
 async def quiz(ctx, ans, n=0):
@@ -62,7 +64,7 @@ async def quiz(ctx, ans, n=0):
       return
     
     QUIZ.save_grades()
-    print(f'\t{name} submitted an answer to ' + ('the latest question' if n==0 else f'question {n}'))
+    log(f'\t{name} submitted an answer to ' + ('the latest question' if n==0 else f'question {n}'))
 
 @bot.command(name='explain', help='displays the explanation for a question and closes it')
 async def quiz(ctx, n=0):
@@ -72,7 +74,7 @@ async def quiz(ctx, n=0):
     await ctx.send(f'The current quiz only has {QUIZ.num_questions()} questions.')
     return
 
-  print(f'\t{name} motioned to explain ' + ('the latest question' if n==0 else f'{n}'))
+  log(f'\t{name} motioned to explain ' + ('the latest question' if n==0 else f'{n}'))
   await ctx.send(QUIZ.find_question(n).get_explanation())
 
 # method to randomize factabout() a little
@@ -98,7 +100,7 @@ async def factabout(ctx, *subject):
   sub = f'**{sub}**'
 
   # send response
-  print(f'{ctx.author.name} is learning about {sub[2:-2]}')
+  log(f'{ctx.author.name} is learning about {sub[2:-2]}')
   await ctx.send(f'{pref(sub)}{explanation([sub])}')
 
 
@@ -110,7 +112,7 @@ async def comment(ctx, *topic):
   comment = phil.twitter_search(topic) if len(topic) else phil.twitter_search()
 
   # send response
-  print(f'{ctx.author.name} wants to talk about {topic}')
+  log(f'{ctx.author.name} wants to talk about {topic}')
   await ctx.send(comment)
 
 
@@ -126,18 +128,18 @@ async def compare(ctx, *args):
   else:
     args = args.split(' and ')
     
-    print(f'{ctx.author.name} compared {args[0]} and {args[1]}')
+    log(f'{ctx.author.name} compared {args[0]} and {args[1]}')
     await ctx.send(phil.compare(args[0], args[1]))
 
 @bot.command(name='define', help='learn the definition of a word or phrase')
 async def define(ctx, *args):
   query = ' '.join(args)
-  print(f'{ctx.author.name} has defined \'{query}\' for the channel')
+  log(f'{ctx.author.name} has defined \'{query}\' for the channel')
   await ctx.send(f'**{query}**: {phil.urban_definition(query)}')
 
 @bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
 async def todo(ctx):
-  print(f'{ctx.author.name} needs something to do...')
+  log(f'{ctx.author.name} needs something to do...')
   await ctx.send(phil.get_todo(with_number=True))
 
 bot.run(DISCORD_TOKEN)
