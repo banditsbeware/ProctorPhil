@@ -37,7 +37,7 @@ def twitter_search(query=None):
   if len(tweets) == 0: return twitter_search()
 
   # choose a random result and clean text
-  text = R.choice(tweets)['full-text']
+  text = R.choice(tweets)['full_text']
   text = re.sub(' ??https?://.*/\w+ ??', '', text)
   text = re.sub('&amp;', '&', text)
 
