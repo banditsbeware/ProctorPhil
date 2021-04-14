@@ -110,4 +110,44 @@ def compare(a, b):
   return result
 
 
+import shutil
+img_src_RE = re.compile('(?<=\sdata-src=").*?(?=")')
+img_alt_RE = re.compile('(?<=\salt=").*?(?=")')
+def image(query=None):
+  # build request URL
+  url = 'https://commons.wikimedia.org/w/index.php?search='
 
+  if query is None:
+    url += random_word()
+  else:
+    url += query.replace(' ', '+')
+
+  url += '&title=Special:MediaSearch&go=Go&type=image'
+
+  # entire results page HTML
+  html = requests.get(url).text
+
+  imgs = img_src_RE.findall(html)       # all image URLs  
+  alts = img_alt_RE.findall(html)[:-4]  # associated alt text for filenames
+
+  # no images found - try a random query
+  if len(imgs) == 0: return image()
+
+  img_number = R.randint(0, len(imgs)-1)
+
+  # download a random image to /img/
+  aboutstr = alts[img_number]
+  filename = './img/' + aboutstr[-15:]
+  imageurl = imgs[img_number]
+
+  # discord won't render SVGs, so skip those
+  if imageurl[-4:] == '.svg': return image(query)
+
+  # e n l a r g e
+  imageurl = re.sub('\d*?px', '1000px', imageurl)
+
+  with requests.get(imageurl, stream=True) as r:
+    with open(filename, 'wb') as f:
+      shutil.copyfileobj(r.raw, f)
+
+  return imageurl, filename, aboutstr

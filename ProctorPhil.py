@@ -10,8 +10,7 @@ from homework import explanation, wikirand
 
 import uphilities as phil
 
-from dotenv import load_dotenv
-load_dotenv()
+from dotenv import load_dotenv; load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix='/')
@@ -23,14 +22,7 @@ QUIZ = quiz.Quiz()
 
 @bot.event
 async def on_ready():
-  for guild in bot.guilds: log(f'connected to {guild.name}')
-  
-"""
-@bot.command(name='FunctionName', help='description')	
-async def MyFunction(ctx):
-   await ctx.send(SomeResponse)
-
-"""
+  print(f'logged in as {bot.user} (ID: {bot.user.id})')
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):
@@ -101,7 +93,7 @@ async def factabout(ctx, *subject):
 
   # send response
   log(f'{ctx.author.name} is learning about {sub[2:-2]}')
-  await ctx.send(f'{pref(sub)}{explanation([sub])}')
+  await ctx.reply(f'{pref(sub)}{explanation([sub])}', mention_author=False)
 
 
 @bot.command(name='talkabout', help='get Phil\'s thoughts about something')
@@ -113,7 +105,7 @@ async def comment(ctx, *topic):
 
   # send response
   log(f'{ctx.author.name} wants to talk about {topic}')
-  await ctx.send(comment)
+  await ctx.reply(comment, mention_author=False)
 
 
 @bot.command(name='compare', help='list some pros and cons about two things (ex: \"compare dogs and cats\"')
@@ -121,7 +113,7 @@ async def compare(ctx, *args):
   args = ' '.join(args)
   # ensure argument has the correct format
   if ' and ' not in args:
-    await ctx.send('Format: /compare `thing 1` and `thing 2`')
+    await ctx.reply('Format: /compare `thing 1` and `thing 2`', mention_author=False)
 
   # this way, phil can compare things that have more than one word
   # as in "/compare my mom and your mom"
@@ -129,17 +121,33 @@ async def compare(ctx, *args):
     args = args.split(' and ')
     
     log(f'{ctx.author.name} compared {args[0]} and {args[1]}')
-    await ctx.send(phil.compare(args[0], args[1]))
+    await ctx.reply(phil.compare(args[0], args[1]), mention_author=False)
 
 @bot.command(name='define', help='learn the definition of a word or phrase')
 async def define(ctx, *args):
   query = ' '.join(args)
   log(f'{ctx.author.name} has defined \'{query}\' for the channel')
-  await ctx.send(f'**{query}**: {phil.urban_definition(query)}')
+  await ctx.reply(f'**{query}**: {phil.urban_definition(query)}', mention_author=False)
 
 @bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
 async def todo(ctx):
   log(f'{ctx.author.name} needs something to do...')
-  await ctx.send(phil.get_todo(with_number=True))
+  await ctx.reply(phil.get_todo(with_number=True), mention_author=False)
+
+@bot.command(name='image', help='search for an image')
+async def image(ctx, *args):
+
+  query = ' '.join(args)
+
+  url, path, desc = phil.image(query)
+
+  img = discord.File(path)
+
+  embed = discord.Embed(title=query, description=desc, url=url)
+
+  embed.set_image(url=f'attachment://{path[6:]}')
+
+  await ctx.reply(embed=embed, file=img, mention_author=False)
+
 
 bot.run(DISCORD_TOKEN)
