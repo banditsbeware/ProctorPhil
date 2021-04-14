@@ -22,7 +22,9 @@ QUIZ = quiz.Quiz()
 
 @bot.event
 async def on_ready():
-  print(f'logged in as {bot.user} (ID: {bot.user.id})')
+  doing = phil.get_todo()
+  await bot.change_presence(activity=discord.Game(name=doing))
+  print(f'logged in as {bot.user}, Playing {doing}')
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):
