@@ -4,7 +4,7 @@ import os
 import re
 import quiz
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
 from random import sample, choice, random
 from homework import explanation, wikirand
 
@@ -20,11 +20,41 @@ def log(msg):
 
 QUIZ = quiz.Quiz()
 
-@bot.event
-async def on_ready():
+# change Phil's presence to a todo item every hour
+@tasks.loop(seconds = 60 * 60)
+async def update_presence():
   doing = phil.get_todo()
   await bot.change_presence(activity=discord.Game(name=doing))
-  print(f'logged in as {bot.user}, Playing {doing}')
+  log(f'Playing {doing}')
+
+@bot.event
+async def on_ready():
+  log(f'logged in as {bot.user}')
+  update_presence.start()
+
+image_types = ['image', 'tiff', 'png', 'gif', 'jpg', 'webp', 'xcf', 'svg']
+@bot.event
+async def on_message(message):
+  if not message.author.bot:
+    txt = message.content
+
+    if txt[0] == '/':
+
+      tokens = txt[1:].split(' ')
+      mime  = tokens[0]
+
+      query = None if len(tokens) <= 1 else ' '.join(tokens[1:])
+
+      if mime == 'image': mime = None
+      url, desc = phil.image(query, mime)
+
+      embed = discord.Embed(title=query, description=desc, url=url)
+
+      embed.set_image(url=url)
+
+      await message.channel.send(embed=embed, mention_author=False)
+
+
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):
@@ -135,21 +165,5 @@ async def define(ctx, *args):
 async def todo(ctx):
   log(f'{ctx.author.name} needs something to do...')
   await ctx.reply(phil.get_todo(with_number=True), mention_author=False)
-
-@bot.command(name='image', help='search for an image')
-async def image(ctx, *args):
-
-  query = ' '.join(args)
-
-  url, path, desc = phil.image(query)
-
-  img = discord.File(path)
-
-  embed = discord.Embed(title=query, description=desc, url=url)
-
-  embed.set_image(url=f'attachment://{path[6:]}')
-
-  await ctx.reply(embed=embed, file=img, mention_author=False)
-
 
 bot.run(DISCORD_TOKEN)

@@ -113,7 +113,7 @@ def compare(a, b):
 import shutil
 img_src_RE = re.compile('(?<=\sdata-src=").*?(?=")')
 img_alt_RE = re.compile('(?<=\salt=").*?(?=")')
-def image(query=None):
+def image(query=None, mime=None):
   # build request URL
   url = 'https://commons.wikimedia.org/w/index.php?search='
 
@@ -124,20 +124,21 @@ def image(query=None):
 
   url += '&title=Special:MediaSearch&go=Go&type=image'
 
+  # filter by file type (.png, .gif, etc)
+  if mime is not None: url += f'&filemime={mime}'
+
   # entire results page HTML
   html = requests.get(url).text
 
   imgs = img_src_RE.findall(html)       # all image URLs  
-  alts = img_alt_RE.findall(html)[:-4]  # associated alt text for filenames
+  alts = img_alt_RE.findall(html)[:-4]  # associated alt text
 
   # no images found - try a random query
   if len(imgs) == 0: return image()
 
   img_number = R.randint(0, len(imgs)-1)
 
-  # download a random image to /img/
   aboutstr = alts[img_number]
-  filename = './img/' + aboutstr[-15:]
   imageurl = imgs[img_number]
 
   # discord won't render SVGs, so skip those
@@ -146,8 +147,4 @@ def image(query=None):
   # e n l a r g e
   imageurl = re.sub('\d*?px', '1000px', imageurl)
 
-  with requests.get(imageurl, stream=True) as r:
-    with open(filename, 'wb') as f:
-      shutil.copyfileobj(r.raw, f)
-
-  return imageurl, filename, aboutstr
+  return imageurl, aboutstr
