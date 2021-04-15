@@ -38,7 +38,7 @@ async def on_message(message):
   if not message.author.bot:
     txt = message.content
 
-    if txt[0] == '/':
+    if txt[0] == '.':
 
       tokens = txt[1:].split(' ')
       mime  = tokens[0]
