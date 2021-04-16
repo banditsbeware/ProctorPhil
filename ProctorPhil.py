@@ -32,29 +32,22 @@ async def on_ready():
   log(f'logged in as {bot.user}')
   update_presence.start()
 
-image_types = ['image', 'tiff', 'png', 'gif', 'jpg', 'webp', 'xcf', 'svg']
-@bot.event
-async def on_message(message):
-  if not message.author.bot:
-    txt = message.content
+image_types = ['tiff', 'png', 'gif', 'jpg', 'webp', 'xcf', 'svg']
+@bot.command(name='image', help='obtain one image')
+async def image(ctx, *args):
+  mime = None
+  if len(args) > 0 and args[-1] in image_types:
+    mime = args[-1]
+    args = args[:-1]
 
-    if txt[0] == '.':
+  query = ' '.join(args) # if len(args) > 0 else None
+  url, desc = phil.image(query, mime)
 
-      tokens = txt[1:].split(' ')
-      mime  = tokens[0]
+  embed = discord.Embed(title=query, description=desc, url=url)
+  embed.set_image(url=url)
 
-      query = None if len(tokens) <= 1 else ' '.join(tokens[1:])
-
-      if mime == 'image': mime = None
-      url, desc = phil.image(query, mime)
-
-      embed = discord.Embed(title=query, description=desc, url=url)
-
-      embed.set_image(url=url)
-
-      await message.channel.send(embed=embed, mention_author=False)
-
-
+  log(f'{ctx.author.name} wants a picture of {query if query is not None else "..."}')
+  await ctx.reply(embed=embed, mention_author=False)
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):

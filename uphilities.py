@@ -134,17 +134,11 @@ def image(query=None, mime=None):
   alts = img_alt_RE.findall(html)[:-4]  # associated alt text
 
   # no images found - try a random query
-  if len(imgs) == 0: return image()
+  if len(imgs) == 0: return image(mime=mime)
 
   img_number = R.randint(0, len(imgs)-1)
 
   aboutstr = alts[img_number]
   imageurl = imgs[img_number]
-
-  # discord won't render SVGs, so skip those
-  if imageurl[-4:] == '.svg': return image(query)
-
-  # e n l a r g e
-  imageurl = re.sub('\d*?px', '1000px', imageurl)
 
   return imageurl, aboutstr
