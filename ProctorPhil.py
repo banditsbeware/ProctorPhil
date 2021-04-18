@@ -32,6 +32,17 @@ async def on_ready():
   log(f'logged in as {bot.user}')
   update_presence.start()
 
+@bot.event
+async def on_message(message):
+  msg = message.content
+
+  # judge people's music suggestions in the music channel
+  if message.channel.id == 817974358060040222:
+    if re.search('://(open.spotify.com|youtu.be|www.youtube.com)/', msg) is not None:
+      await message.channel.send(phil.music_comment())
+
+  await bot.process_commands(message)
+
 image_types = ['tiff', 'png', 'gif', 'jpg', 'webp', 'xcf', 'svg']
 @bot.command(name='image', help='obtain one image')
 async def image(ctx, *args):
@@ -97,14 +108,10 @@ async def quiz(ctx, n=0):
 # method to randomize factabout() a little
 def pref(sub):
   return choice([
-    f'Here\'s a fact about {sub}:\n',
-     'Hmmm... I think that ',
-     'If I remember correctly, ',
-     'It may surprise you, but ',
-     'It turns out that ',
-     'As a matter of fact, ',
-    f'I have some experience with {sub}. ',
-     'The evidence indicates that '
+    f'Here\'s a fact about {sub}:\n', 'Hmmm... I think that ',
+     'If I remember correctly, ', 'It may surprise you, but ',
+     'It turns out that ', 'As a matter of fact, ',
+    f'I have some experience with {sub}. ', 'The evidence indicates that '
   ])
 @bot.command(name='factabout', help='gives you a fact about something')
 # asterisk to grab the whole list of space-separated args

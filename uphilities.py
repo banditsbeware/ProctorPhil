@@ -142,3 +142,20 @@ def image(query=None, mime=None):
   imageurl = imgs[img_number]
 
   return imageurl, aboutstr
+
+genre_url = 'https://binaryjazz.us/wp-json/genrenator/v1/genre/'
+genre_comments = [
+  'That sounds like _.', 'That\'s some good _.', 'banger', 'this slaps', 'this smacks',
+  'I can\'t tell if that\'s _ or _.', 'This is the intersection of _ and _.',
+  'I remember my _ days.', 'I don\'t like _.', 'This redefines _.',
+  'Sweet, I love _.', 'Thank you for sharing some classic _.', 'Jamming rn',
+  '_ is completely underrated.', '_ is completely overrated.',
+  '_-type beat', '_ vibes', 'My mother also listens to _.'
+]
+def music_comment():
+  comment = R.choice(genre_comments)
+  while comment.find('_') >= 0:
+    comment = comment.replace('_', requests.get(genre_url).text, 1)
+  comment = comment.replace('"', '*')
+  comment = comment.replace('\\', '')
+  return comment
