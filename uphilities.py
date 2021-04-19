@@ -159,3 +159,11 @@ def music_comment():
   comment = comment.replace('"', '*')
   comment = comment.replace('\\', '')
   return comment
+
+def get_quote(proper=False, chaos=False):
+  json = requests.get('https://api.fisenko.net/quotes?l=en').json()
+  q = json["text"].split(' ')
+  if chaos: R.shuffle(q)
+  q = ' '.join(q).capitalize()
+  if proper: return f'"{q}"\n - {json["author"]}'
+  return q
