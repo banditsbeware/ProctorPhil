@@ -41,9 +41,12 @@ async def on_message(message):
     if re.search('://(open.spotify.com|youtu.be|www.youtube.com)/', msg) is not None:
       await message.channel.send(phil.music_comment())
 
-  if (random() < 0.01):
+  if (random() < 0.1):
     chaos = random() < 0.2
     await message.channel.send(phil.get_quote(proper=False, chaos=chaos))
+  
+  elif (random() < 0.1):
+    await message.channel.send(phil.kanye())
 
   await bot.process_commands(message)
 
@@ -124,8 +127,8 @@ def pref(sub):
   ])
 @bot.command(name='factabout', help='gives you a fact about something')
 # asterisk to grab the whole list of space-separated args
-async def factabout(ctx, *subject): 
-  sub = ' '.join(subject).capitalize()
+async def factabout(ctx, *, arg): 
+  sub = arg.capitalize()
 
   # if nothing is entered, select a random page
   if len(sub) == 0: sub = wikirand()
@@ -138,9 +141,7 @@ async def factabout(ctx, *subject):
 
 
 @bot.command(name='talkabout', help='get Phil\'s thoughts about something')
-async def comment(ctx, *topic):
-  topic = ' '.join(topic)
-
+async def comment(ctx, *, topic):
   # search twitter for the given string
   comment = phil.twitter_search(topic) if len(topic) else phil.twitter_search()
 
@@ -150,8 +151,7 @@ async def comment(ctx, *topic):
 
 
 @bot.command(name='compare', help='list some pros and cons about two things (ex: \"compare dogs and cats\"')
-async def compare(ctx, *args):
-  args = ' '.join(args)
+async def compare(ctx, *, args):
   # ensure argument has the correct format
   if ' and ' not in args:
     await ctx.reply('Format: /compare `thing 1` and `thing 2`', mention_author=False)
@@ -165,14 +165,15 @@ async def compare(ctx, *args):
     await ctx.reply(phil.compare(args[0], args[1]), mention_author=False)
 
 @bot.command(name='define', help='learn the definition of a word or phrase')
-async def define(ctx, *args):
-  query = ' '.join(args)
-  log(f'{ctx.author.name} has defined \'{query}\' for the channel')
-  await ctx.reply(f'**{query}**: {phil.urban_definition(query)}', mention_author=False)
+async def define(ctx, *, query):
+  if len(query) > 0:
+    log(f'{ctx.author.name} has defined \'{query}\' for the channel')
+    await ctx.reply(f'**{query}**: {phil.urban_definition(query)}', mention_author=False)
 
 @bot.command(name='todo', help='get an item from the Post-Quarantine Bucket List')
 async def todo(ctx):
   log(f'{ctx.author.name} needs something to do...')
   await ctx.reply(phil.get_todo(with_number=True), mention_author=False)
 
-bot.run(DISCORD_TOKEN)
+if __name__ == '__main__':
+  bot.run(DISCORD_TOKEN)

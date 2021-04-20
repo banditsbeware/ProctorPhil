@@ -167,3 +167,6 @@ def get_quote(proper=False, chaos=False):
   q = ' '.join(q).capitalize()
   if proper: return f'"{q}"\n - {json["author"]}'
   return q
+
+def kanye():
+  return requests.get('https://api.kanye.rest?format=text').text
