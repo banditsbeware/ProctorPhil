@@ -160,13 +160,24 @@ def music_comment():
   comment = comment.replace('\\', '')
   return comment
 
-def get_quote(proper=False, chaos=False):
-  json = requests.get('https://api.fisenko.net/quotes?l=en').json()
-  q = json["text"].split(' ')
-  if chaos: R.shuffle(q)
-  q = ' '.join(q).capitalize()
-  if proper: return f'"{q}"\n - {json["author"]}'
-  return q
+num_quote_sources = 3
+def quote():
+  if R.random() < 1/num_quote_sources: return general_quote()
+  if R.random() < 1/num_quote_sources: return kanye_quote()
+  if R.random() < 1/num_quote_sources: return anime_quote()
+  return quote()
 
-def kanye():
+def general_quote(proper=False):
+  json = requests.get('https://api.fisenko.net/quotes?l=en').json()
+  return f'"{json["quote"]}"\n - {json["author"]}'
+
+def kanye_quote():
   return requests.get('https://api.kanye.rest?format=text').text
+
+def anime_quote():
+  return requests.get('https://animechan.vercel.app/api/random').quote
+
+def shuffle_text(string):
+  words = string.split(' ')
+  R.shuffle(words)
+  return ' '.join(words)

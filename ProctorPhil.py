@@ -34,6 +34,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    
+  if message.author.bot: return
+
   msg = message.content
 
   # judge people's music suggestions in the music channel
@@ -41,12 +44,10 @@ async def on_message(message):
     if re.search('://(open.spotify.com|youtu.be|www.youtube.com)/', msg) is not None:
       await message.channel.send(phil.music_comment())
 
-  if (random() < 0.1):
-    chaos = random() < 0.2
-    await message.channel.send(phil.get_quote(proper=False, chaos=chaos))
-  
-  elif (random() < 0.1):
-    await message.channel.send(phil.kanye())
+  if random() < 0.05:
+    quote = phil.quote()
+    if random() < 0.3: quote = phil.shuffle_text(quote)
+    await message.channel.send(quote)
 
   await bot.process_commands(message)
 
@@ -69,8 +70,7 @@ async def image(ctx, *args):
 
 @bot.command(name='quote', help='wisdom from the masters')
 async def quote(ctx):
-  chaos = random() < 0.2
-  await ctx.reply(phil.get_quote(proper=True, chaos=chaos), mention_author=False)
+  await ctx.reply(phil.general_quote(proper=True), mention_author=False)
 
 @bot.command(name='quiz', help='begins a new quiz')
 async def quiz(ctx):
