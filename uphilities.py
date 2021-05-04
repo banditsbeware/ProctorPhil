@@ -182,4 +182,11 @@ def shuffle_text(string):
   R.shuffle(words)
   return ' '.join(words)
 
-if __name__ == '__main__': print(quote())
+from PIL import Image
+def blend_images(path1, path2):
+  img1 = Image.open(path1)
+  img2 = Image.open(path2).resize(img1.size)
+  img2.convert(img1.mode)
+
+  destfn = './img/blend.png'
+  Image.blend(img1, img2, 0.5).save(destfn)
