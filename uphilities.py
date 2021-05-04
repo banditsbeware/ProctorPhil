@@ -169,15 +169,17 @@ def quote():
 
 def general_quote(proper=False):
   json = requests.get('https://api.fisenko.net/quotes?l=en').json()
-  return f'"{json["quote"]}"\n - {json["author"]}'
+  return f'"{json["text"]}"\n - {json["author"]}' if proper else json['text']
 
 def kanye_quote():
-  return requests.get('https://api.kanye.rest?format=text').text
+  return requests.get('https://api.kanye.rest?format=text').json()['quote']
 
 def anime_quote():
-  return requests.get('https://animechan.vercel.app/api/random').quote
+  return requests.get('https://animechan.vercel.app/api/random').json()['quote']
 
 def shuffle_text(string):
   words = string.split(' ')
   R.shuffle(words)
   return ' '.join(words)
+
+if __name__ == '__main__': print(quote())
