@@ -190,3 +190,13 @@ def blend_images(path1, path2):
 
   destfn = './img/blend.png'
   Image.blend(img1, img2, 0.5).save(destfn)
+
+from png import *
+def edit(path):
+
+  im = Image.open(path)
+
+  for _ in range(15):
+    R.choice(FUNCTIONS)(im)
+  im.save('./img/edit.png')
+  return False

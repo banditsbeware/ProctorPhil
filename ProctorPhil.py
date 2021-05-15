@@ -95,7 +95,36 @@ async def blend(ctx):
     except ValueError as e:
       await ctx.send(f'something\'s wrong with those images.\n\n`{e}`')
 
+@bot.command(name='edit', help='edit an image')
+async def edit(ctx):
+  img = None 
 
+  # look for images in the most recent 20 messages
+  async for msg in ctx.history(limit=20):
+
+    # only consider messages from the issuer of this /edit command
+    if msg.author == ctx.author:
+
+      # look for an image in the message
+      if len(msg.attachments) == 1:# and msg.attachments[0].content_type.find('image') == 0:
+
+        att = msg.attachments[0]
+        img = f'./img/{att.filename}'
+        break
+
+  # download image
+  if img is not None:
+    await att.save(img)
+    phil.edit(img)
+  else:
+    await ctx.reply('I couldn\'t find an image from you.', mention_author=False)
+
+  f = discord.File(f'./img/edit.png')
+
+  await ctx.send(file=f)
+
+  for f in os.listdir('./img/'):
+    os.remove(f'./img/{f}')
 
 image_types = ['tiff', 'png', 'gif', 'jpg', 'webp', 'xcf', 'svg']
 @bot.command(name='image', help='obtain one image')
@@ -185,7 +214,6 @@ async def factabout(ctx, *, arg):
   log(f'{ctx.author.name} is learning about {sub[2:-2]}')
   await ctx.reply(f'{pref(sub)}{explanation([sub])}', mention_author=False)
 
-
 @bot.command(name='talkabout', help='get Phil\'s thoughts about something')
 async def comment(ctx, *, topic):
   # search twitter for the given string
@@ -194,7 +222,6 @@ async def comment(ctx, *, topic):
   # send response
   log(f'{ctx.author.name} wants to talk about {topic}')
   await ctx.reply(comment, mention_author=False)
-
 
 @bot.command(name='compare', help='list some pros and cons about two things (ex: \"compare dogs and cats\"')
 async def compare(ctx, *, args):
