@@ -191,5 +191,32 @@ async def todo(ctx):
   log(f'{ctx.author.name} needs something to do...')
   await ctx.reply(phil.get_todo(with_number=True), mention_author=False)
 
+with open('vocab/faces.txt', 'r', encoding='utf-8') as f: faces = f.read().split('\n')
+@bot.command(name='mood', help='a big vibe')
+async def mood(ctx):
+  g = ctx.guild
+  c = g.get_channel(806679944305311768)
+  await c.edit(name=R.choice(faces))
+
+ACROS = ['BRB', 'TTYL', 'LMAO', 'LOL', 'YOLO', 'OMG']
+@bot.command(name='acro', help='add an acronym definition')
+async def acro(ctx, acr, *, args):
+
+  if acr not in ACROS:
+    await ctx.reply(f'that acronym isn\'t on the list.', mention_author=False)
+    return
+
+  # this algorithm could be quite a lot better
+  i = 0; j = 0
+  while i < len(args) and j < len(acr):
+    if args[i] == acr[j]: j += 1
+    i += 1
+
+  if j == len(acr):
+    with open(f'vocab/acro_{acr}.txt', 'a') as f: f.write(f'{args}\n')
+    await ctx.send(f'definition for {acr} added') 
+  else:
+    await ctx.send(f'that definition doesn\'t match') 
+
 if __name__ == '__main__':
   bot.run(DISCORD_TOKEN)
