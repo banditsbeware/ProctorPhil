@@ -134,11 +134,8 @@ genre_url = 'https://binaryjazz.us/wp-json/genrenator/v1/genre/'
 genre_comments = [
   'That sounds like _.', 'That\'s some good _.', 'banger', 'this slaps', 'this smacks',
   'I can\'t tell if that\'s _ or _.', 'This is the intersection of _ and _.',
-  'I remember my _ days.', 'I don\'t like _.', 'This redefines _.',
-  'Sweet, I love _.', 'Thank you for sharing some classic _.', 'Jamming rn',
-  '_ is completely underrated.', '_ is completely overrated.',
-  '_-type beat', '_ vibes', 'My mother also listens to _.'
-]
+  'This redefines _.', 'I love _.', 'Thank you for sharing some classic _.', 'Jamming rn',
+  '_-type beat', '_ vibes', 'My mother also listens to _.']
 def music_comment():
   comment = R.choice(genre_comments)
   while comment.find('_') >= 0:
@@ -187,3 +184,29 @@ def edit(path):
     R.choice(FUNCTIONS)(im)
   im.save('./img/edit.png')
   return False
+
+emlist = ['😀', '😖', '👏', '🍆💦', '😬', '😔', '😞', '🙌', '💪', '🙏', '👀', '🗣', '👌', '😭', '😉', '😋', '🙇', '💫', '🔥', '✨', '™️', '🌈', '📈', '❤', '🅱', '💯', '💭', '😷', '😓', '😳', '😍', '™️', '♿️', '❌']
+def random_emoji():
+  return R.choice(emlist) + ' '
+
+def emojify(text):
+
+  text = text.split(' ')
+
+  res = ''
+
+  for word in text:
+
+    if R.random() < 0.5: 
+      res += random_emoji()
+      if R.random() < 0.5: 
+        res += random_emoji()
+        if R.random() < 0.5: 
+          res += random_emoji()
+
+    res += word + ' '
+
+  return res
+
+if __name__ == '__main__':
+  print(emojify('hey jackie, this is a cool idea!'))
