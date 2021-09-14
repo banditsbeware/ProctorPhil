@@ -67,6 +67,23 @@ def get_todo(with_number=False):
   # return a random number with the list item
   return f'{R.randint(0, len(lis))}. {li}' if with_number else li
 
+def wiki_fact(subject):
+
+  t = requests.get('http://en.wikipedia.org/wiki/Special:Random').text
+  t = re.sub('<a.*?>|</a>|<span.*?>|</span>', '', t)
+  t = re.sub('<i.*?>|</i>', '*', t)
+
+  # sentences with was/is verb
+  m = re.findall(r"\swas\s.*?\.|\sis\s.*?\.", t)
+
+  # there are always some footnotes that match at the end - ignore them
+  if len(m) <= 2: return wiki_fact(subject)
+  m = m[:-2]
+
+  return f'{subject}{R.choice(m)}'
+
+if __name__ == '__main__': print(wiki_fact('Hannah'))
+
 import urbanpython
 urban = urbanpython.Urban(os.getenv('URBAN_DICTIONARY_KEY'))
 def urban_definition(query):
@@ -207,6 +224,3 @@ def emojify(text):
     res += word + ' '
 
   return res
-
-if __name__ == '__main__':
-  print(emojify('hey jackie, this is a cool idea!'))

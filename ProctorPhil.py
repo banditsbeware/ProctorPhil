@@ -149,10 +149,8 @@ async def quote(ctx):
   await ctx.reply(ph.general_quote(proper=True), mention_author=False)
 
 @bot.command(name='factabout', help='gives you a fact about something')
-# asterisk to grab the whole list of space-separated args
-async def factabout(ctx, *, arg): 
-  # use wikitools via uphilities
-  await ctx.reply('please tell david to fix this.')
+async def factabout(ctx, *, args): 
+  await ctx.reply(ph.wiki_fact(args))
 
 @bot.command(name='talkabout', help='get Phil\'s thoughts about something')
 async def comment(ctx, *, topic):
