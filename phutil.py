@@ -43,29 +43,8 @@ def twitter_search(query=None):
 
   return text
 
-re_li = re.compile('<li.*?>.*?(?=<ol>|</li>)')
 def get_todo(with_number=False):
-  # ask the bucket list for its items
-  with requests.get('https://pigeon.dog') as res:
-    if res.status_code != 200:
-      raise RuntimeError(f'request to PQBL returned status code {res.status_code}')
-    # the raw html string
-    html = str(res.text)     
-
-  # pick a list item
-  lis = re_li.findall(html)
-  li = R.choice(lis)
-
-  # clean out the junk and format for discord
-  li = re.sub('<b.*?>|</b>', '**', li)
-  li = re.sub('<em.*?>|</em>', '*', li)
-  li = re.sub('<u.*?>|</u>', '__', li)
-  li = re.sub('<code.*?>|</code>', '`', li)
-  li = re.sub('&emsp;', '    ', li)
-  li = re.sub('<.*?>', '', li)
-
-  # return a random number with the list item
-  return f'{R.randint(0, len(lis))}. {li}' if with_number else li
+    return requests.get('https://pigeon.dog/todo').text
 
 def wiki_fact(subject):
 
