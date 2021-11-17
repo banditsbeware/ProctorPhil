@@ -7,6 +7,14 @@ import random as R
 
 from dotenv import load_dotenv; load_dotenv()
 
+def clean_tags(t):
+  t = re.sub('<a.*?>|</a>|<span.*?>|</span>|<sup.*?>}</sup>|<div.*?>|</div>', '', t)
+  t = re.sub('<i.*?>|</i>', '*', t)
+  t = re.sub('<b.*?>|</b>', '**', t)
+  t = re.sub('&amp;', '&', t)
+  t = re.sub('&emsp;', '    ', t)
+  return t
+
 # wordnik allows unlimited requests, but will 429 pretty quickly
 # .. in that case, use wordsAPI
 wordnik_url = os.getenv('WORDNIK_URL')
@@ -49,8 +57,7 @@ def get_todo(with_number=False):
 def wiki_fact(subject):
 
   t = requests.get('http://en.wikipedia.org/wiki/Special:Random').text
-  t = re.sub('<a.*?>|</a>|<span.*?>|</span>', '', t)
-  t = re.sub('<i.*?>|</i>', '*', t)
+  t = clean_tags(t)
 
   # sentences with was/is verb
   m = re.findall(r"\swas\s.*?\.|\sis\s.*?\.", t)
@@ -61,7 +68,7 @@ def wiki_fact(subject):
 
   return f'{subject}{R.choice(m)}'
 
-if __name__ == '__main__': print(wiki_fact('Hannah'))
+# if __name__ == '__main__': print(wiki_fact('Hannah'))
 
 import urbanpython
 urban = urbanpython.Urban(os.getenv('URBAN_DICTIONARY_KEY'))
@@ -130,8 +137,8 @@ genre_url = 'https://binaryjazz.us/wp-json/genrenator/v1/genre/'
 genre_comments = [
   'That sounds like _.', 'That\'s some good _.', 'banger', 'this slaps', 'this smacks',
   'I can\'t tell if that\'s _ or _.', 'This is the intersection of _ and _.',
-  'This redefines _.', 'I love _.', 'Thank you for sharing some classic _.', 'Jamming rn',
-  '_-type beat', '_ vibes', 'My mother also listens to _.']
+  'This redefines _.', 'I love _.', 'Thank you for sharing some classic _.', 
+  '_-type beat', '_ vibes']
 def music_comment():
   comment = R.choice(genre_comments)
   while comment.find('_') >= 0:
@@ -140,22 +147,26 @@ def music_comment():
   comment = comment.replace('\\', '')
   return comment
 
-num_quote_sources = 3
-def quote():
-  if R.random() < 1/num_quote_sources: return general_quote()
-  if R.random() < 1/num_quote_sources: return kanye_quote()
-  if R.random() < 1/num_quote_sources: return anime_quote()
-  return quote()
+h2 = re.compile(r'(?<=<h2>)[\s\S]*?(?=<h2>)')
+dd = re.compile(r'(?<=<dd>)[\s\S]*?(?=</dd>)|(?<=<ul><li>)[\s\S]*?(?=</li>|<ul>)')
+def general_quote():
+  text = requests.get('https://en.wikiquote.org/wiki/Special:Random').text
+  text = ''.join(h2.findall(text)[:-1])
+  text = clean_tags(R.choice(dd.findall(text)))
+  return text
 
-def general_quote(proper=False):
-  json = requests.get('https://api.fisenko.net/quotes?l=en').json()
-  return f'"{json["text"]}"\n - {json["author"]}' if proper else json['text']
+
+if __name__ == '__main__': print(general_quote())
 
 def kanye_quote():
   return requests.get('https://api.kanye.rest?format=text').json()['quote']
 
 def anime_quote():
   return requests.get('https://animechan.vercel.app/api/random').json()['quote']
+
+Q = [ general_quote, kanye_quote, anime_quote ]
+def quote():
+  return R.choice(Q)()
 
 def shuffle_text(string):
   words = string.split(' ')

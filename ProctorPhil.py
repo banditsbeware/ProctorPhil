@@ -18,13 +18,13 @@ def log(msg):
 
 with open('vocab/faces.txt', 'r', encoding='utf-8') as f: faces = f.read().split('\n')
 
-# change Phil's presence to a todo item every hour
-@tasks.loop(seconds = 60 * 60)
+# change Phil's presence to a todo item every half hour
+@tasks.loop(seconds = 30 * 60)
 async def update_presence():
   doing = ph.get_todo()
   g = bot.guilds[0]
   c = g.get_channel(806679944305311768)
-  # await c.edit(name=R.choice(faces))
+  await c.edit(name=R.choice(faces))
   await bot.change_presence(activity=discord.Game(name=doing))
   log(f'Playing {doing}')
 
