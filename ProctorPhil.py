@@ -144,6 +144,33 @@ async def image(ctx, *args):
   log(f'{ctx.author.name} wants a picture of {query if query is not None else "..."}')
   await ctx.reply(embed=embed, mention_author=False)
 
+import error as e
+re = re.compile(r'".*?"g?\s??')
+@bot.command(name='error', help='generate an error message')
+async def error(ctx, *arg):
+
+  title = R.choice(ph.get_todo().split(' '))
+  text = ph.get_todo()
+  Lt = None
+  Ct = None
+  Rt = ph.random_word()
+
+  if len(arg) >= 1: title = arg[0]
+  if len(arg) >= 2: text = arg[1]
+  if len(arg) >= 3: Rt = arg[2]
+  if len(arg) >= 4: Ct = arg[3]
+  if len(arg) >= 5: Lt = arg[4]
+
+  Lg = R.random() < 0.4
+  Cg = R.random() < 0.4
+  Rg = R.random() < 0.4
+
+  e.error(title=title, text=text, L=Lt, Lg=Lg, C=Ct, Cg=Cg, R=Rt, Rg=Rg)
+
+  f = discord.File('./img/error.png')
+  await ctx.send(file=f)
+
+
 @bot.command(name='quote', help='wisdom from the masters')
 async def quote(ctx):
   await ctx.reply(ph.general_quote(proper=True), mention_author=False)
