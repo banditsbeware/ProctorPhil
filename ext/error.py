@@ -1,7 +1,10 @@
+from discord.ext import commands
+from discord import File
 import requests
 import shutil
 import regex
-from random import choice
+from random import choice, random
+from utils import *
 
 icons = ['Attention','Error','Error2','Error3','Error4','aim_guy','aol_icon','bomb','bomb_dynamite','bomb_grenade','bubble_i','bubble_q',
 'bulb','butterfly','cake','circularsaw','control_panel','cow','defrag','disk_blu','disk_blu_lbl','disk_org','disk_red','disk_red_lbl',
@@ -30,3 +33,35 @@ def error(icon=None, style=None, title=None, text=None, L=None, Lg=False, C=None
   with open('img/error.png', 'wb') as f:
     r.raw.decode_content = True
     shutil.copyfileobj(r.raw, f)
+
+
+class Error(commands.Cog, name='Error'):
+  def __init__(self, bot):
+    self.bot = bot
+
+  @commands.command(name='error')
+  async def error(self, ctx, *arg):
+
+    title = choice(todo().split(' '))
+    text = todo()
+    Lt = None
+    Ct = None
+    Rt = random_word()
+
+    if len(arg) >= 1: title = arg[0]
+    if len(arg) >= 2: text = arg[1]
+    if len(arg) >= 3: Rt = arg[2]
+    if len(arg) >= 4: Ct = arg[3]
+    if len(arg) >= 5: Lt = arg[4]
+
+    Lg = random() < 0.4
+    Cg = random() < 0.4
+    Rg = random() < 0.4
+
+    error(title=title, text=text, L=Lt, Lg=Lg, C=Ct, Cg=Cg, R=Rt, Rg=Rg)
+
+    f = File('./img/error.png')
+    await ctx.send(file=f)
+
+def setup(bot):
+  bot.add_cog(Error(bot))
