@@ -1,13 +1,14 @@
 from discord.ext import commands
 import discord
+import logging
 import requests
 from random import choice
 from youtube_dl import YoutubeDL
+from youtubesearchpython import VideosSearch
 
-# collection of videos of type "N hours of silence broken only by X"
-v = [ 'hOwiw6RKkZ8', 'ameTtKHP5SA', '0Jzx25X80oA', 'QGroZXx2eGM', 'z6BSnp534L4', 'jvMCitR0-l4', 'MLw2vJPv5bc', 's6V4BjURhOs', 'H_slL1opzFc', 'bmDdHk_X864']
 def url():
-  return f'https://www.youtube.com/watch?v={choice(v)}'
+  res = VideosSearch('hours interrupted', limit=30).result()
+  return choice([ x['link'] for x in res['result'] ]) 
 
 YTDL_OPTS = { 
   'format': 'worstaudio', 
@@ -15,31 +16,6 @@ YTDL_OPTS = {
   'outtmpl': 'audio/shit.%(ext)s'
 }
 FFMPEG_OPTS = { 'options': '-vn' }
-
-ytdl = YoutubeDL(YTDL_OPTS)
-
-class YTDLSource(discord.PCMVolumeTransformer):
-  def __init__(self, source, *, data, volume=0.5):
-    super().__init__(source, volume)
-    self.data = data
-    self.title = data.get('title')
-    self.url = data.get('url')
-
-  @classmethod
-  async def from_url(cls, url, *, loop=None, stream=False):
-
-    loop = loop or asyncio.get_event_loop()
-
-    data = await loop.run_in_executor(None, 
-      lambda: ytdl.extract_info(url, download=not stream))
-
-    if 'entries' in data:
-      data = choice(data['entries'])
-
-    filename = data['url'] if stream else ytdl.prepare_filename(data)
-    return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTS), data=data)
-
-
 class Audio(commands.Cog, name='Audio'):
   def __init__(self, bot):
     self.bot = bot
@@ -48,13 +24,20 @@ class Audio(commands.Cog, name='Audio'):
   @commands.command(name='join')
   async def join(self, ctx):
 
-    if ctx.message.author.voice:
-      await ctx.message.author.voice.channel.connect()
+    if (v := ctx.message.author.voice):
+      voice = await v.channel.connect()
 
-      self.player = await YTDLSource.from_url(url(), loop=self.bot.loop, stream=True)
+      with YoutubeDL(YTDL_OPTS) as ydl:
+        info = ydl.extract_info(url(), download=False)
+        vid = info['formats'][0]['url']
+        logging.info(vid)
 
-      ctx.voice_client.play(self.player,
-        after=lambda e: logging.info(e) if e else None)
+      voice.play(discord.FFmpegPCMAudio(vid))
+      
+      while voice.is_playing():
+        await asyncio.sleep(1)
+
+      await voice.disconnect()
 
 
   @commands.command(name='leave')

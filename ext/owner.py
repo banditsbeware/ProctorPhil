@@ -37,7 +37,7 @@ class Owner(commands.Cog, name='Owner'):
   @commands.is_owner()
   async def reload_all(self, ctx):
     extstr = ', '.join( [ e[4:] for e in self.bot.extensions ] )
-    for ext in self.bot.extensions:
+    for ext in list(self.bot.extensions):
       self.bot.reload_extension(ext)
       
     await ctx.send(f'extensions reloaded:\n{extstr}')
