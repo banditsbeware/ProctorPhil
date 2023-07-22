@@ -14,16 +14,18 @@ def clean_tags(t):
   return t
 
 
-def todo(lim=10000):
-  t = requests.get('https://pigeon.dog/todo').text
-  if len(t) > lim: t = t[:lim-3] + '...'
-  return t.strip(' \t\n\r')
+item_re = re.compile(r'(?<=li.*?>)[\s\S]+?(?=</li>|<ol)')
+def todo():
+  html = requests.get('https://pigeon.dog').text
+  all_items = item_re.findall(html)
+  td = re.sub('<.*?>|&emsp;', '', choice(all_items))
+  return td if len(td) > 0 else todo()
 
 
 def random_word():
-  res = requests.get(config['wordnik_url'])
-  if res.status_code == 200:
-    return res.json()['word']
+# res = requests.get(config['wordnik_url'])
+# if res.status_code == 200:
+#   return res.json()['word']
 
   t = requests.get('http://en.wikipedia.org/wiki/Special:Random').text
   t = clean_tags(t)
@@ -32,6 +34,7 @@ def random_word():
   while '.' in word:
     word = choice(T)
   return word
+
 
 if __name__ == '__main__': 
   for _ in range(50):

@@ -39,7 +39,10 @@ def shuffle_text(string):
   shuffle(words)
   return ' '.join(words)
 
-emlist = ['😀', '😖', '👏', '🍆💦', '😬', '😔', '😞', '🙌', '💪', '🙏', '👀', '🗣', '👌', '😭', '😉', '😋', '🙇', '💫', '🔥', '✨', '™️', '🌈', '📈', '❤', '🅱', '💯', '💭', '😷', '😓', '😳', '😍', '™️', '♿️', '❌']
+emlist = ['😀', '😖', '👏', '🍆💦', '😬', '😔', '😞', '🙌', '💪', 
+'🙏', '👀', '🗣', '👌', '😭', '😉', '😋', '🙇', '💫', '🔥', '✨', 
+'™️', '🌈', '📈', '❤', '🅱', '💯', '💭', '😷', '😓', '😳', 
+'😍', '™️', '♿️', '❌']
 def emojify(text):
   text = text.split(' ')
   res = ''
@@ -69,9 +72,9 @@ class Message(commands.Cog, name='Message'):
         await message.channel.send(music_comment())
 
     # spontaneous utterances
-    if random() < 0.05:
+    if random() < 0.01:
       Q = quote()
-      if random() < 0.3: Q = shuffle_text(Q)
+      if random() < 0.2: Q = shuffle_text(Q)
       await message.channel.send(Q)
 
   @commands.command(name='clap')

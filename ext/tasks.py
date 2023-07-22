@@ -3,17 +3,18 @@ from discord.ext import tasks, commands
 import logging
 import requests
 from random import choice
+from utils import *
 
-# for recurring tasks
+#for recurring tasks
 class Tasks(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
     with open('./vocab/faces.txt', 'r') as f: txt = f.read()
     self.faces = txt.split('\n')
 
-  @tasks.loop(minutes=30)
+  @tasks.loop(minutes=13)
   async def update_presence(self):
-    status = requests.get('https://pigeon.dog/todo').text
+    status = todo()
     if len(status) > 128: status = status[:125] + '...'
     await self.bot.change_presence(activity=Game(name=status))
     logging.info(f'playing {status}')
