@@ -1,19 +1,8 @@
 from discord.ext import commands
 from discord import File
 import requests
-import shutil
 import regex
-from random import choice, random
 from utils import *
-
-# looks like this website doesn't exist anymore :(
-
-icons = ['Attention','Error','Error2','Error3','Error4','aim_guy','aol_icon','bomb','bomb_dynamite','bomb_grenade','bubble_i','bubble_q',
-'bulb','butterfly','cake','circularsaw','control_panel','cow','defrag','disk_blu','disk_blu_lbl','disk_org','disk_red','disk_red_lbl',
-'disk_skull','disk_yel','dos','e_orbit','file_cabinet','find','fortunecookie','garbage_empty','garbage_full','gun','hammer','heart',
-'help','hub','hwinfo','ic_a','keys','keys2','keys3','labtec','mac','mail','mail_deleted','mailbox',
-'mouth','mycomputer','mycomputer2','mycomputer3','newspaper','peripheral','plant_leaf','radiation','ram','recycle','recycle2','scanner',
-'screw','screw2','setup','sknife','skull','skull2','skull3','tux','tux_config','ups','zipdisk','zipdisks']
 
 def error(icon=None, style=None, title=None, text=None, L=None, Lg=False, C=None, Cg=False, R=None, Rg=False):
   url = 'http://atom.smasher.org/error/xp.png.php?'
@@ -67,3 +56,4 @@ class Error(commands.Cog, name='Error'):
 
 def setup(bot):
   bot.add_cog(Error(bot))
+

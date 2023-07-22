@@ -11,6 +11,7 @@ with open('./config.json', 'r') as f:
   config = json.load(f)
 
 
+# no longer works
 urban = urbanpython.Urban(config['urban_dictionary_key'])
 def urban_definition(query):
   result = urban.search(query)
@@ -28,6 +29,7 @@ def wiki_fact(subject):
   return f'{subject}{choice(m)}'
 
 
+# no longer works
 twitter = Twython(config['TW_APP_KEY'],   config['TW_APP_SEC'],
                   config['TW_OAUTH_KEY'], config['TW_OAUTH_SEC'])
 def twitter_search(query=None):

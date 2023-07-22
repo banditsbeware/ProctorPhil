@@ -19,7 +19,7 @@ def todo():
   html = requests.get('https://pigeon.dog').text
   all_items = item_re.findall(html)
   td = re.sub('<.*?>|&emsp;', '', choice(all_items))
-  return td if len(td) > 0 else todo()
+  return td.strip() if len(td) > 0 else todo()
 
 
 def random_word():

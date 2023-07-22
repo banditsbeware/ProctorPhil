@@ -2,6 +2,7 @@ aiohttp==3.7.4.post0
 anyio==3.5.0
 async-timeout==3.0.1
 attrs==21.4.0
+beautifulsoup4
 certifi==2021.10.8
 cffi==1.15.0
 chardet==4.0.0
@@ -25,8 +26,8 @@ six==1.16.0
 sniffio==1.2.0
 twython==3.9.1
 typing_extensions==4.0.1
-urbanpython==1.0.4
+urbanpython>=1.0.4
 urllib3==1.26.8
-yarl==1.7.2
+yarl>=1.7.2
 youtube-dl==2021.12.17
 youtube-search-python==1.6.2
